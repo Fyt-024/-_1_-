@@ -1,0 +1,12 @@
+{
+    "mse": 95417344000.0,
+    "rmse": 308896.9795902835,
+    "mae": 172414.6875,
+    "r2": 0.8090141415596008,
+    "learning_rate": 0.001,
+    "epochs": 100,
+    "batch_size": 32,
+    "dropout_rate1": 0.3,
+    "dropout_rate2": 0.2,
+    "patience": 20
+}

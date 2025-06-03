@@ -1,0 +1,11 @@
+/1model.pkl
+# Model files
+*.pkl
+*.cbm
+*.json
+*.keras
+
+# Output files
+*.png
+*_feature_importance.csv
+*_training_history.csv

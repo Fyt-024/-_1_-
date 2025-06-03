@@ -1,0 +1,48 @@
+# 数据处理参数
+data:
+  train_ratio: 0.6
+  test_ratio: 0.4
+  random_state: 42
+  target_column: 'selling_price'
+
+# 线性回归参数
+linear_regression:
+  fit_intercept: true
+  normalize: false
+  n_jobs: -1
+
+# 决策树参数
+decision_tree:
+  max_depth: 10
+  min_samples_split: 5
+  min_samples_leaf: 1
+  random_state: 42
+
+# CatBoost参数
+catboost:
+  iterations: 1000
+  learning_rate: 0.1
+  depth: 6
+  loss_function: 'RMSE'
+  random_state: 42  # 修改了这里，从random_seed改为random_state
+  verbose: 100
+
+# XGBoost参数
+xgboost:
+  eta: 0.1  # 修改了这里，从learning_rate改为eta
+  max_depth: 6
+  subsample: 0.8
+  colsample_bytree: 0.8
+  objective: 'reg:squarederror'
+  random_state: 42
+  num_rounds: 500  # 修改了这里，从n_estimators改为num_rounds
+
+# 神经网络参数
+neural_network:
+  learning_rate: 0.001
+  batch_size: 32
+  epochs: 100
+  dropout_rate1: 0.3  # 添加了这个参数
+  dropout_rate2: 0.2  # 添加了这个参数
+  patience: 20  # 添加了这个参数
+  validation_split: 0.2

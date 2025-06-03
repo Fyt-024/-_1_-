@@ -1,0 +1,294 @@
+stages:
+  # 数据预处理阶段
+  preprocess:
+    cmd: python preprocess.py
+    deps:
+      - raw_data.csv
+      - preprocess.py
+    outs:
+      - train_data.csv
+      - test_data.csv
+      - validation_data.csv
+
+  # 特征工程阶段
+  feature_engineering:
+    cmd: python feature_engineering.py
+    deps:
+      - train_data.csv
+      - test_data.csv
+      - validation_data.csv
+      - feature_engineering.py
+    outs:
+      - processed_train_data.csv
+      - processed_test_data.csv
+      - processed_validation_data.csv
+      - feature_importance.csv:
+          cache: false
+
+  # 线性回归模型
+  linear_regression_train:
+    cmd: python 1linear-reg-learn.py
+    deps:
+      - processed_train_data.csv
+      - 1linear-reg-learn.py
+    params:
+      - linear_regression.fit_intercept
+      - linear_regression.normalize
+    outs:
+      - 1model.pkl
+    metrics:
+      - 1linear_reg_train_metrics.json:
+          cache: false
+    plots:
+      - 1linear_reg_residuals.png
+
+  # 线性回归模型验证
+  linear_regression_valid:
+    cmd: python 1linear-reg-valid.py
+    deps:
+      - 1model.pkl
+      - processed_validation_data.csv
+      - 1linear-reg-valid.py
+    metrics:
+      - 1linear_reg_valid_metrics.json:
+          cache: false
+    plots:
+      - 1linear_reg_valid_residuals.png
+
+  # 线性回归模型测试
+  linear_regression_test:
+    cmd: python 1linear-reg-test.py
+    deps:
+      - 1model.pkl
+      - processed_test_data.csv
+      - 1linear-reg-test.py
+    metrics:
+      - 1linear_reg_full_metrics.json:
+          cache: false
+    plots:
+      - 1linear_reg_pred_vs_actual.png
+
+  # 决策树模型
+  decision_tree_train:
+    cmd: python 2decision-tree-learn.py
+    deps:
+      - processed_train_data.csv
+      - 2decision-tree-learn.py
+    params:
+      - decision_tree.max_depth
+      - decision_tree.min_samples_split
+      - decision_tree.random_state
+    outs:
+      - 2dt_model.pkl
+    metrics:
+      - 2decision_tree_train_metrics.json:
+          cache: false
+    plots:
+      - 2decision_tree.png
+
+  # 决策树模型验证
+  decision_tree_valid:
+    cmd: python 2decision-tree-valid.py
+    deps:
+      - 2dt_model.pkl
+      - processed_validation_data.csv
+      - 2decision-tree-valid.py
+    metrics:
+      - 2decision_tree_valid_metrics.json:
+          cache: false
+    plots:
+      - 2decision_tree_valid_plot.png
+
+  # 决策树模型测试
+  decision_tree_test:
+    cmd: python 2decision-tree-test.py
+    deps:
+      - 2dt_model.pkl
+      - processed_test_data.csv
+      - 2decision-tree-test.py
+    metrics:
+      - 2decision_tree_full_metrics.json:
+          cache: false
+    plots:
+      - 2decision_tree_pred_vs_actual.png
+
+  # CatBoost模型
+  catboost_train:
+    cmd: python 3catboost-learn.py
+    deps:
+      - processed_train_data.csv
+      - 3catboost-learn.py
+    params:
+      - catboost.iterations
+      - catboost.learning_rate
+      - catboost.depth
+      - catboost.random_state
+    outs:
+      - 3catboost_model.cbm
+    metrics:
+      - 3catboost_metrics.json:
+          cache: false
+    plots:
+      - 3catboost_feature_importance.png
+
+  # CatBoost模型验证
+  catboost_valid:
+    cmd: python 3catboost-valid.py
+    deps:
+      - 3catboost_model.cbm
+      - processed_validation_data.csv
+      - 3catboost-valid.py
+    metrics:
+      - 3catboost_valid_metrics.json:
+          cache: false
+    plots:
+      - 3catboost_validation_plot.png
+
+  # CatBoost模型测试
+  catboost_test:
+    cmd: python 3catboost-test.py
+    deps:
+      - 3catboost_model.cbm
+      - processed_test_data.csv
+      - 3catboost-test.py
+    metrics:
+      - 3catboost_full_metrics.json:
+          cache: false
+    plots:
+      - 3catboost_test_plot.png
+
+  # XGBoost模型
+  xgboost_train:
+    cmd: python 4xgboost-learn.py
+    deps:
+      - processed_train_data.csv
+      - 4xgboost-learn.py
+    params:
+      - xgboost.max_depth
+      - xgboost.eta
+      - xgboost.num_rounds
+      - xgboost.subsample
+      - xgboost.colsample_bytree
+      - xgboost.random_state
+    outs:
+      - 4xgb_model.json
+    metrics:
+      - 4xgboost_metrics.json:
+          cache: false
+    plots:
+      - 4xgboost_feature_importance.png
+
+  # XGBoost模型验证
+  xgboost_valid:
+    cmd: python 4xgboost-valid.py
+    deps:
+      - 4xgb_model.json
+      - processed_validation_data.csv
+      - 4xgboost-valid.py
+    metrics:
+      - 4xgboost_valid_metrics.json:
+          cache: false
+    plots:
+      - 4xgboost_validation_plot.png
+
+  # XGBoost模型测试
+  xgboost_test:
+    cmd: python 4xgboost-test.py
+    deps:
+      - 4xgb_model.json
+      - processed_test_data.csv
+      - 4xgboost-test.py
+    metrics:
+      - 4xgboost_full_metrics.json:
+          cache: false
+    plots:
+      - 4xgboost_test_plot.png
+
+  # 神经网络模型
+  neural_network_train:
+    cmd: python 5neural-network-learn.py
+    deps:
+      - processed_train_data.csv
+      - 5neural-network-learn.py
+    params:
+      - neural_network.hidden_layers
+      - neural_network.activation
+      - neural_network.learning_rate
+      - neural_network.batch_size
+      - neural_network.epochs
+      - neural_network.dropout_rate
+      - neural_network.random_state
+    outs:
+      - 5nn_model.keras
+      - 5nn_scaler.pkl
+    metrics:
+      - 5nn_metrics.json:
+          cache: false
+    plots:
+      - 5nn_learning_curves.png
+      - 5nn_weights_histogram.png
+
+  # 神经网络模型验证
+  neural_network_valid:
+    cmd: python 5neural-network-valid.py
+    deps:
+      - 5nn_model.keras
+      - 5nn_scaler.pkl
+      - processed_validation_data.csv
+      - 5neural-network-valid.py
+    metrics:
+      - 5nn_valid_metrics.json:
+          cache: false
+    plots:
+      - 5nn_valid_pred_vs_actual.png
+
+  # 神经网络模型测试
+  neural_network_test:
+    cmd: python 5neural-network-test.py
+    deps:
+      - 5nn_model.keras
+      - 5nn_scaler.pkl
+      - processed_test_data.csv
+      - 5neural-network-test.py
+    metrics:
+      - 5nn_full_metrics.json:
+          cache: false
+    plots:
+      - 5nn_full_pred_vs_actual.png
+      - 5nn_full_residuals.png
+
+  # 模型比较和评估
+  model_comparison:
+    cmd: python model_comparison.py
+    deps:
+      - 1linear_reg_valid_metrics.json
+      - 2decision_tree_valid_metrics.json
+      - 3catboost_valid_metrics.json
+      - 4xgboost_valid_metrics.json
+      - 5nn_valid_metrics.json
+      - 1linear_reg_full_metrics.json
+      - 2decision_tree_full_metrics.json
+      - 3catboost_full_metrics.json
+      - 4xgboost_full_metrics.json
+      - 5nn_full_metrics.json
+      - model_comparison.py
+    outs:
+      - model_comparison.csv:
+          cache: false
+    plots:
+      - model_comparison_plot.png
+      - model_comparison_radar.png
+
+  # 最佳模型部署
+  deploy_best_model:
+    cmd: python deploy_model.py
+    deps:
+      - model_comparison.csv
+      - 4xgb_model.json  # 假设XGBoost是最佳模型
+      - deploy_model.py
+    outs:
+      - deployed_model.pkl
+      - model_card.md:
+          cache: false
+      - deployment_report.json:
+          cache: false
